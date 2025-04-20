@@ -27,6 +27,7 @@
     "no-case-declarations": "off",
     "no-constant-condition": "off",
     "no-undef": "off",
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "no-useless-escape": "off"
   }
 }
