@@ -1,0 +1,33 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "bni",
+      "camelcase": "BNI",
+      "scope": "source.bni",
+      "file-types": [
+        "bni"
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "BNI grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "nazarpunk",
+        "email": "nazarpunk@gmail.com"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/WarRaft/tree-sitter-bni"
+    }
+  },
+  "bindings": {
+    "go": false,
+    "python": false,
+    "swift": false,
+    "node": true
+  }
+}
