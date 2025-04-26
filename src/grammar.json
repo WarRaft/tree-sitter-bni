@@ -13,63 +13,51 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "section_line"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "section"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "newline"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "item"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "newline"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "comment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "newline"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
-          "name": "key_value_line"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "comment_line"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "empty_line"
+          "name": "newline"
         }
       ]
     },
-    "section_line": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "section"
-        },
-        {
-          "type": "PATTERN",
-          "value": "\\n"
-        }
-      ]
-    },
-    "key_value_line": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "key_value"
-        },
-        {
-          "type": "PATTERN",
-          "value": "\\n"
-        }
-      ]
-    },
-    "comment_line": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "comment"
-        },
-        {
-          "type": "PATTERN",
-          "value": "\\n"
-        }
-      ]
-    },
-    "empty_line": {
+    "newline": {
       "type": "PATTERN",
       "value": "\\n"
     },
@@ -85,7 +73,7 @@
           "name": "name",
           "content": {
             "type": "SYMBOL",
-            "name": "identifier"
+            "name": "id"
           }
         },
         {
@@ -94,7 +82,7 @@
         }
       ]
     },
-    "key_value": {
+    "item": {
       "type": "SEQ",
       "members": [
         {
@@ -164,8 +152,32 @@
             "type": "SEQ",
             "members": [
               {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "whitespace"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
                 "type": "STRING",
                 "value": ","
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "whitespace"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               },
               {
                 "type": "SYMBOL",
@@ -199,8 +211,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "PATTERN",
-            "value": "[^\"\\n]"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^\"\\n]"
+              },
+              {
+                "type": "PATTERN",
+                "value": "\"\""
+              }
+            ]
           }
         },
         {
@@ -211,11 +232,15 @@
     },
     "bare_value": {
       "type": "PATTERN",
-      "value": "[^,\"\\n]+"
+      "value": "[^,\"\\n][^,\\n]*"
     },
-    "identifier": {
+    "id": {
       "type": "PATTERN",
       "value": "[^\\[\\]\\n=;]+"
+    },
+    "whitespace": {
+      "type": "PATTERN",
+      "value": "[ \\t]+"
     }
   },
   "extras": [

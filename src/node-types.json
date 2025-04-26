@@ -1,26 +1,6 @@
 [
   {
-    "type": "comment_line",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "comment",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "empty_line",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "key_value",
+    "type": "item",
     "named": true,
     "fields": {
       "key": {
@@ -46,21 +26,6 @@
     }
   },
   {
-    "type": "key_value_line",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "key_value",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "program",
     "named": true,
     "root": true,
@@ -70,19 +35,19 @@
       "required": false,
       "types": [
         {
-          "type": "comment_line",
+          "type": "comment",
           "named": true
         },
         {
-          "type": "empty_line",
+          "type": "item",
           "named": true
         },
         {
-          "type": "key_value_line",
+          "type": "newline",
           "named": true
         },
         {
-          "type": "section_line",
+          "type": "section",
           "named": true
         }
       ]
@@ -102,26 +67,11 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "id",
             "named": true
           }
         ]
       }
-    }
-  },
-  {
-    "type": "section_line",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "section",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -153,6 +103,10 @@
       "types": [
         {
           "type": "value",
+          "named": true
+        },
+        {
+          "type": "whitespace",
           "named": true
         }
       ]
@@ -187,11 +141,19 @@
     "named": true
   },
   {
-    "type": "identifier",
+    "type": "id",
     "named": true
   },
   {
     "type": "key",
+    "named": true
+  },
+  {
+    "type": "newline",
+    "named": true
+  },
+  {
+    "type": "whitespace",
     "named": true
   }
 ]

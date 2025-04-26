@@ -5,36 +5,21 @@ module.exports = grammar({
         program: $ => repeat($._line),
 
         _line: $ => choice(
-            $.section_line,
-            $.key_value_line,
-            $.comment_line,
-            $.empty_line
+            seq($.section, $.newline),
+            seq($.item, $.newline),
+            seq($.comment, $.newline),
+            $.newline,
         ),
 
-        section_line: $ => seq(
-            $.section,
-            /\n/
-        ),
-
-        key_value_line: $ => seq(
-            $.key_value,
-            /\n/
-        ),
-
-        comment_line: $ => seq(
-            $.comment,
-            /\n/
-        ),
-
-        empty_line: _ => /\n/,
+        newline: _ => /\n/,
 
         section: $ => seq(
             '[',
-            field('name', $.identifier),
+            field('name', $.id),
             ']'
         ),
 
-        key_value: $ => seq(
+        item: $ => seq(
             field('key', $.key),
             '=',
             field('value', optional($.value_list))
@@ -44,7 +29,15 @@ module.exports = grammar({
 
         key: _ => /[^\s=\[\];][^=\[\];\n]*/,
 
-        value_list: $ => seq($.value, repeat(seq(',', $.value))),
+        value_list: $ => seq(
+            $.value,
+            repeat(seq(
+                optional($.whitespace),
+                ',',
+                optional($.whitespace),
+                $.value
+            ))
+        ),
 
         value: $ => choice(
             $.quoted_string,
@@ -53,12 +46,17 @@ module.exports = grammar({
 
         quoted_string: _ => seq(
             '"',
-            repeat(/[^"\n]/),
+            repeat(choice(
+                /[^"\n]/,
+                /""/
+            )),
             '"'
         ),
 
-        bare_value: _ => /[^,"\n]+/,
+        bare_value: _ => /[^,"\n][^,\n]*/,
 
-        identifier: _ => /[^\[\]\n=;]+/,
+        id: _ => /[^\[\]\n=;]+/,
+
+        whitespace: _ => /[ \t]+/,
     }
 })
