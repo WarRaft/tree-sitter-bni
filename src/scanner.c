@@ -1,6 +1,8 @@
 #include <tree_sitter/parser.h>
 #include <wctype.h>
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 enum TokenType {
   LINE_BREAK,
 };
