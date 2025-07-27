@@ -1,62 +1,59 @@
 module.exports = grammar({
     name: 'bni',
 
+    externals: $ => [
+        $.line_break,
+    ],
+
     rules: {
         program: $ => repeat($._line),
 
         _line: $ => choice(
-            seq($.section, $.newline),
-            seq($.item, $.newline),
-            seq($.comment, $.newline),
-            $.newline,
+            $.section,
+            $.item,
+            $.comment,
+            $.blank,
         ),
-
-        newline: _ => /\n/,
 
         section: $ => seq(
             '[',
-            field('name', $.id),
-            ']'
+            field('name', $.section_name),
+            ']',
+            $.line_break
         ),
 
         item: $ => seq(
-            field('key', $.key),
+            field('key', optional($.key)),
             '=',
-            field('value', optional($.value_list))
+            field('value', optional($.value_list)),
+            $.line_break
         ),
 
         comment: _ => token(prec(-1, seq('//', /.*/))),
 
-        key: _ => /[^\s=\[\];][^=\[\];\n]*/,
+        blank: $ => $.line_break,
 
-        value_list: $ => seq(
-            $.value,
-            repeat(seq(
-                optional($.whitespace),
-                ',',
-                optional($.whitespace),
-                $.value
-            ))
-        ),
+        key: _ => token(/[^\s=\[\];][^=\[\];\n]*/),
 
-        value: $ => choice(
+        section_name: _ => /[^\[\]\n=;]+/,
+
+        value_list: $ => repeat1(choice(
+            $.comma,
+            $.whitespace,
             $.quoted_string,
-            $.bare_value
-        ),
+            $.unquoted_string
+        )),
 
-        quoted_string: _ => seq(
+        comma: _ => token(','),
+
+        whitespace: _ => token(/[ \t]+/),
+
+        quoted_string: _ => token(seq(
             '"',
-            repeat(choice(
-                /[^"\n]/,
-                /""/
-            )),
+            repeat(choice(/[^"\n]/, /""/)),
             '"'
-        ),
+        )),
 
-        bare_value: _ => /[^,"\n][^,\n]*/,
-
-        id: _ => /[^\[\]\n=;]+/,
-
-        whitespace: _ => /[ \t]+/,
+        unquoted_string: _ => token(/[^", \t\n][^,\n]*/),
     }
 })
