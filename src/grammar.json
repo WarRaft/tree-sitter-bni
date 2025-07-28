@@ -165,6 +165,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "int"
+          },
+          {
+            "type": "SYMBOL",
             "name": "whitespace"
           },
           {
@@ -183,6 +187,13 @@
       "content": {
         "type": "STRING",
         "value": ","
+      }
+    },
+    "int": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[+-]?\\d+"
       }
     },
     "whitespace": {

@@ -37,12 +37,15 @@ module.exports = grammar({
 
         value_list: $ => repeat1(choice(
             $.comma,
+            $.int,
             $.whitespace,
             $.quoted_string,
             $.unquoted_string
         )),
 
         comma: _ => token(','),
+
+        int: _ => token(/[+-]?\d+/),
 
         whitespace: _ => token(/[ \t]+/),
 
