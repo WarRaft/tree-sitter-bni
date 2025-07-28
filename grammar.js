@@ -9,9 +9,9 @@ module.exports = grammar({
         program: $ => repeat($._line),
 
         _line: $ => choice(
-            $.section,
-            $.item,
-            $.comment,
+            prec(10, seq($.comment, $.line_break)),
+            seq($.section, $.line_break),
+            seq($.item, $.line_break),
             $.blank,
         ),
 
@@ -19,17 +19,15 @@ module.exports = grammar({
             '[',
             field('name', $.section_name),
             ']',
-            $.line_break
         ),
 
         item: $ => seq(
             field('key', optional($.key)),
             '=',
-            field('value', optional($.value_list)),
-            $.line_break
+            field('value', optional($.value_list))
         ),
 
-        comment: _ => token(prec(-1, seq('//', /.*/))),
+        comment: _ => token(seq('//', /.*/)),
 
         blank: $ => $.line_break,
 

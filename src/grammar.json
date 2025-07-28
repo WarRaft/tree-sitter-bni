@@ -13,16 +13,47 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "section"
+          "type": "PREC",
+          "value": 10,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "comment"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "line_break"
+              }
+            ]
+          }
         },
         {
-          "type": "SYMBOL",
-          "name": "item"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "section"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "line_break"
+            }
+          ]
         },
         {
-          "type": "SYMBOL",
-          "name": "comment"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "item"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "line_break"
+            }
+          ]
         },
         {
           "type": "SYMBOL",
@@ -48,10 +79,6 @@
         {
           "type": "STRING",
           "value": "]"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "line_break"
         }
       ]
     },
@@ -93,31 +120,23 @@
               }
             ]
           }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "line_break"
         }
       ]
     },
     "comment": {
       "type": "TOKEN",
       "content": {
-        "type": "PREC",
-        "value": -1,
-        "content": {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "//"
-            },
-            {
-              "type": "PATTERN",
-              "value": ".*"
-            }
-          ]
-        }
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "//"
+          },
+          {
+            "type": "PATTERN",
+            "value": ".*"
+          }
+        ]
       }
     },
     "blank": {
