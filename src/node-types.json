@@ -1,43 +1,21 @@
 [
   {
-    "type": "blank",
+    "type": "item",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": true,
+      "multiple": true,
+      "required": false,
       "types": [
         {
-          "type": "line_break",
+          "type": "key",
+          "named": true
+        },
+        {
+          "type": "value_list",
           "named": true
         }
       ]
-    }
-  },
-  {
-    "type": "item",
-    "named": true,
-    "fields": {
-      "key": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "key",
-            "named": true
-          }
-        ]
-      },
-      "value": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "value_list",
-            "named": true
-          }
-        ]
-      }
     }
   },
   {
@@ -49,14 +27,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "blank",
-          "named": true
-        },
-        {
-          "type": "comment",
-          "named": true
-        },
         {
           "type": "item",
           "named": true
@@ -75,17 +45,24 @@
   {
     "type": "section",
     "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "section_name",
-            "named": true
-          }
-        ]
-      }
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "l_bracket",
+          "named": true
+        },
+        {
+          "type": "section_name",
+          "named": true
+        },
+        {
+          "type": "whitespace",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -98,6 +75,14 @@
       "types": [
         {
           "type": "comma",
+          "named": true
+        },
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "float",
           "named": true
         },
         {
@@ -124,10 +109,6 @@
     "named": false
   },
   {
-    "type": "[",
-    "named": false
-  },
-  {
     "type": "]",
     "named": false
   },
@@ -140,11 +121,19 @@
     "named": true
   },
   {
+    "type": "float",
+    "named": true
+  },
+  {
     "type": "int",
     "named": true
   },
   {
     "type": "key",
+    "named": true
+  },
+  {
+    "type": "l_bracket",
     "named": true
   },
   {

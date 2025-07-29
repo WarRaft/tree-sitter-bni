@@ -3,58 +3,49 @@ module.exports = grammar({
 
     externals: $ => [
         $.line_break,
+        $.l_bracket,
+        $.int,
+        $.float,
+        $.quoted_string,
+        $.unquoted_string,
+        $.whitespace,
+        $.comma,
+        $.comment,
+        $.section_name,
+        $.key,
     ],
 
     rules: {
         program: $ => repeat($._line),
 
         _line: $ => choice(
-            prec(10, seq($.comment, $.line_break)),
             seq($.section, $.line_break),
             seq($.item, $.line_break),
-            $.blank,
+            $.line_break,
         ),
 
         section: $ => seq(
-            '[',
-            field('name', $.section_name),
-            ']',
+            optional($.whitespace),
+            $.l_bracket,
+            $.section_name,
+            optional(']'),
         ),
 
-        item: $ => seq(
-            field('key', optional($.key)),
-            '=',
-            field('value', optional($.value_list))
+        item: $ => choice(
+            seq($.key, '=', $.value_list),
+            seq($.key, '='),
+            seq('=', $.value_list),
+            $.value_list,
+            '='
         ),
-
-        comment: _ => token(seq('//', /.*/)),
-
-        blank: $ => $.line_break,
-
-        key: _ => token(/[^\s=\[\];][^=\[\];\n]*/),
-
-        section_name: _ => /[^\[\]\n=;]+/,
 
         value_list: $ => repeat1(choice(
+            seq($.int, optional($.whitespace)),
+            seq($.float, optional($.whitespace)),
+            seq($.quoted_string, optional($.whitespace)),
+            $.unquoted_string,
             $.comma,
-            $.int,
-            $.whitespace,
-            $.quoted_string,
-            $.unquoted_string
+            $.comment,
         )),
-
-        comma: _ => token(','),
-
-        int: _ => token(/[+-]?\d+/),
-
-        whitespace: _ => token(/[ \t]+/),
-
-        quoted_string: _ => token(seq(
-            '"',
-            repeat(choice(/[^"\n]/, /""/)),
-            '"'
-        )),
-
-        unquoted_string: _ => token(/[^", \t\n][^,\n]*/),
     }
 })
