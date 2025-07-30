@@ -1,9 +1,16 @@
 ==================
-Section
+Main
 ==================
 
 [Section]
-
+ [Section]
 ---
 
-(program)
+(program
+    (line_break)
+    (section
+        (l_bracket)
+        (section_name)
+    )
+    (line_break)
+)

@@ -128,10 +128,6 @@
           ]
         },
         {
-          "type": "SYMBOL",
-          "name": "value_list"
-        },
-        {
           "type": "STRING",
           "value": "="
         }

@@ -10,7 +10,7 @@ module.exports = grammar({
         $.unquoted_string,
         $.whitespace,
         $.comma,
-        $.comment,
+        $.line_comment,
         $.section_name,
         $.key,
     ],
@@ -35,7 +35,6 @@ module.exports = grammar({
             seq($.key, '=', $.value_list),
             seq($.key, '='),
             seq('=', $.value_list),
-            $.value_list,
             '='
         ),
 
@@ -45,7 +44,7 @@ module.exports = grammar({
             seq($.quoted_string, optional($.whitespace)),
             $.unquoted_string,
             $.comma,
-            $.comment,
+            $.line_comment,
         )),
     }
 })
