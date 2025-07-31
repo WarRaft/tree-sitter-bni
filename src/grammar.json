@@ -39,6 +39,19 @@
           ]
         },
         {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "comment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "line_break"
+            }
+          ]
+        },
+        {
           "type": "SYMBOL",
           "name": "line_break"
         }
@@ -78,6 +91,27 @@
               "type": "BLANK"
             }
           ]
+        }
+      ]
+    },
+    "comment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "whitespace"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "line_comment"
         }
       ]
     },
@@ -211,7 +245,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "comment"
+            "name": "line_comment"
           }
         ]
       }
@@ -260,7 +294,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "comment"
+      "name": "line_comment"
     },
     {
       "type": "SYMBOL",

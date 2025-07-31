@@ -12,7 +12,7 @@ enum TokenType {
   UNQUOTED_STRING,
   WHITESPACE,
   COMMA,
-  COMMENT,
+  LINE_COMMENT,
   SECTION_NAME,
   KEY,
 };
@@ -43,58 +43,74 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
     }
   }
 
-    enum TokenKind {
-        TOKEN_ = 0,
-        TOKEN_WS,
-        TOKEN_SECTION,
-        TOKEN_ITEM
-    };
-    // enum TokenKind kind = TOKEN_;
-
   // START OF LINE: SECTION vs ITEM
   if (valid_symbols[WHITESPACE] && valid_symbols[L_BRACKET] && valid_symbols[KEY]) {
-    bool eat_ws = false;
+      bool eat_ws = false;
 
-    while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ) {
-      lexer->advance(lexer, false);
-      eat_ws = true;
-    }
+      // 1. Жрём пробелы
+      while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+          lexer->advance(lexer, false);
+          eat_ws = true;
+      }
 
-    if (lexer->lookahead == '[') {
-        if (eat_ws){
-            lexer->result_symbol = WHITESPACE;
-        } else {
-            lexer->advance(lexer, false);
-            lexer->result_symbol = L_BRACKET;
-        }
-        lexer->mark_end(lexer);
-        return true;
-    }
+      // 2. После пробелов: если [ или // — это WHITESPACE
+      if (eat_ws) {
+          if (lexer->lookahead == '[' ||
+              (lexer->lookahead == '/' && lexer->lookahead != 0 && lexer->lookahead == '/')) {
+              lexer->result_symbol = WHITESPACE;
+              lexer->mark_end(lexer);
+              return true;
+          }
+      }
 
+      // 3. Без пробелов: [ → L_BRACKET
+      if (lexer->lookahead == '[') {
+          lexer->advance(lexer, false);
+          lexer->result_symbol = L_BRACKET;
+          lexer->mark_end(lexer);
+          return true;
+      }
 
-    const int32_t first = lexer->lookahead;
-    if (first == '=' || is_newline(first) || lexer->eof(lexer)) {
-        return false;
-    }
+      // 4. Без пробелов: // → LINE_COMMENT
+      if (lexer->lookahead == '/') {
+          lexer->advance(lexer, false);
+          if (lexer->lookahead == '/') {
+              lexer->advance(lexer, false);
+              while (!lexer->eof(lexer) && !is_newline(lexer->lookahead)) {
+                  lexer->advance(lexer, false);
+              }
+              lexer->result_symbol = LINE_COMMENT;
+              lexer->mark_end(lexer);
+              return true;
+          } else {
+              return false;
+          }
+      }
 
-    bool eat_key = false;
+      // 5. Если = сразу, или \n, или eof — не ключ
+      if (lexer->lookahead == '=' || is_newline(lexer->lookahead) || lexer->eof(lexer)) {
+          return false;
+      }
 
-    while (!lexer->eof(lexer) && lexer->lookahead != '=' && !is_newline(lexer->lookahead)) {
-        lexer->advance(lexer, false);
-        eat_key = true;
-    }
+      // 6. Жрём до = или конца строки
+      bool eat_key = false;
+      while (!lexer->eof(lexer) &&
+             lexer->lookahead != '=' &&
+             !is_newline(lexer->lookahead)) {
+          lexer->advance(lexer, false);
+          eat_key = true;
+      }
 
-    if (!eat_key) return false;
+      // 7. Если хоть что-то съели — это KEY
+      if (eat_key) {
+          lexer->result_symbol = KEY;
+          lexer->mark_end(lexer);
+          return true;
+      }
 
-    if (lexer->lookahead == '=') {
-        lexer->result_symbol = KEY;
-    } else {
-        lexer->result_symbol = UNQUOTED_STRING;
-    }
-
-    lexer->mark_end(lexer);
-    return true;
+      return false;
   }
+
 
   // WHITESPACE (in value_list)
   if (valid_symbols[WHITESPACE]) {
@@ -114,15 +130,15 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
     return true;
   }
 
-  // COMMENT
-  if (valid_symbols[COMMENT] && lexer->lookahead == '/') {
+  // LINE_COMMENT
+  if (valid_symbols[LINE_COMMENT] && lexer->lookahead == '/') {
     lexer->advance(lexer, false);
     if (lexer->lookahead == '/') {
       lexer->advance(lexer, false);
       while (lexer->lookahead && !is_newline(lexer->lookahead)) {
         lexer->advance(lexer, false);
       }
-      lexer->result_symbol = COMMENT;
+      lexer->result_symbol = LINE_COMMENT;
       return true;
     }
   }

@@ -21,6 +21,7 @@ module.exports = grammar({
         _line: $ => choice(
             seq($.section, $.line_break),
             seq($.item, $.line_break),
+            seq($.comment, $.line_break),
             $.line_break,
         ),
 
@@ -30,6 +31,8 @@ module.exports = grammar({
             $.section_name,
             optional(']'),
         ),
+
+        comment: $ => seq(optional($.whitespace), $.line_comment),
 
         item: $ => choice(
             seq($.key, '=', $.value_list),
