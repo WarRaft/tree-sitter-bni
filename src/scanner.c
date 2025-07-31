@@ -43,6 +43,13 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
     }
   }
 
+    // COMMA
+    if (valid_symbols[COMMA] && lexer->lookahead == ',') {
+      lexer->advance(lexer, false);
+      lexer->result_symbol = COMMA;
+      return true;
+    }
+
   // START OF LINE: SECTION vs ITEM
   if (valid_symbols[WHITESPACE] && valid_symbols[L_BRACKET] && valid_symbols[KEY]) {
       bool eat_ws = false;
@@ -119,70 +126,98 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
       return false;
   }
 
+    // SECTION_NAME
+    if (valid_symbols[SECTION_NAME]) {
+      if (lexer->lookahead != 0 && lexer->lookahead != ']' && !is_newline(lexer->lookahead)) {
+        while (lexer->lookahead != 0 && lexer->lookahead != ']' && !is_newline(lexer->lookahead)) {
+          lexer->advance(lexer, false);
+        }
+        lexer->result_symbol = SECTION_NAME;
+        return true;
+      }
+    }
+
     // INT / FLOAT
     if ((valid_symbols[INT] || valid_symbols[FLOAT]) &&
-        (lexer->lookahead == '-' || lexer->lookahead == '.' || (lexer->lookahead >= '0' && lexer->lookahead <= '9'))) {
+        (lexer->lookahead == '-' || lexer->lookahead == '.' ||
+         (lexer->lookahead >= '0' && lexer->lookahead <= '9'))) {
 
-      int32_t c = lexer->lookahead;
-      bool has_leading_digits = false;
-      bool has_dot = false;
-      bool has_trailing_digits = false;
+      bool saw_digit = false;
+      bool is_float = false;
 
-      if (c == '-') {
+      if (lexer->lookahead == '-') {
         lexer->advance(lexer, false);
-        c = lexer->lookahead;
       }
 
-      while (c >= '0' && c <= '9') {
-        has_leading_digits = true;
+      while (lexer->lookahead >= '0' && lexer->lookahead <= '9') {
+        saw_digit = true;
         lexer->advance(lexer, false);
-        c = lexer->lookahead;
+        lexer->mark_end(lexer);
       }
 
-      if (c == '.') {
-        has_dot = true;
+      if (lexer->lookahead == '.') {
+        is_float = true;
         lexer->advance(lexer, false);
-        c = lexer->lookahead;
-        while (c >= '0' && c <= '9') {
-          has_trailing_digits = true;
+
+        while (lexer->lookahead >= '0' && lexer->lookahead <= '9') {
+          saw_digit = true;
           lexer->advance(lexer, false);
-          c = lexer->lookahead;
+          lexer->mark_end(lexer);
+        }
+      }
+
+      // 1. Прямое завершение
+      if (lexer->lookahead == ',' || is_newline(lexer->lookahead) || lexer->eof(lexer)) {
+        lexer->result_symbol = is_float ? FLOAT : INT;
+        return true;
+      }
+
+      // 2. Пробелы — допустимы (но не расширяют токен)
+      if (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+        do {
+          lexer->advance(lexer, false);
+        } while (lexer->lookahead == ' ' || lexer->lookahead == '\t');
+
+        if (lexer->lookahead == ',' ||
+            is_newline(lexer->lookahead) ||
+            lexer->eof(lexer)) {
+          lexer->result_symbol = is_float ? FLOAT : INT;
+          return true;
         }
 
-        if (c == '.') return false; // более одной точки → ошибка
+        if (lexer->lookahead == '/') {
+          lexer->advance(lexer, false);
+          if (lexer->lookahead == '/') {
+            lexer->result_symbol = is_float ? FLOAT : INT;
+            return true;
+          }
+        }
       }
-
-      if (has_dot && (has_leading_digits || has_trailing_digits) && valid_symbols[FLOAT]) {
-        lexer->result_symbol = FLOAT;
-        return true;
-      }
-
-      if (!has_dot && has_leading_digits && valid_symbols[INT]) {
-        lexer->result_symbol = INT;
-        return true;
-      }
-
-      return false; // fallback → unquoted_string
     }
 
+ // WHITESPACE (in value_list)
+ if (valid_symbols[WHITESPACE]) {
+   if (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+     do {
+       lexer->advance(lexer, false);
+       lexer->mark_end(lexer);
+     } while (lexer->lookahead == ' ' || lexer->lookahead == '\t');
 
-  // WHITESPACE (in value_list)
-  if (valid_symbols[WHITESPACE]) {
-    if (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
-      while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
-        lexer->advance(lexer, false);
-      }
-      lexer->result_symbol = WHITESPACE;
-      return true;
-    }
-  }
+     if (is_newline(lexer->lookahead) || lexer->eof(lexer)) {
+       lexer->result_symbol = WHITESPACE;
+       return true;
+     }
 
-  // COMMA
-  if (valid_symbols[COMMA] && lexer->lookahead == ',') {
-    lexer->advance(lexer, false);
-    lexer->result_symbol = COMMA;
-    return true;
-  }
+     if (lexer->lookahead == '/') {
+       lexer->advance(lexer, false);
+       if (lexer->lookahead == '/') {
+         lexer->result_symbol = WHITESPACE;
+         return true;
+       }
+     }
+   }
+ }
+
 
   // LINE_COMMENT
   if (valid_symbols[LINE_COMMENT] && lexer->lookahead == '/') {
@@ -217,6 +252,7 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
     return true;
   }
 
+// UNQUOTED_STRING
 if (valid_symbols[UNQUOTED_STRING]) {
   bool found = false;
 
@@ -248,18 +284,6 @@ if (valid_symbols[UNQUOTED_STRING]) {
     return true;
   }
 }
-
-
-  // SECTION_NAME
-  if (valid_symbols[SECTION_NAME]) {
-    if (lexer->lookahead != 0 && lexer->lookahead != ']' && !is_newline(lexer->lookahead)) {
-      while (lexer->lookahead != 0 && lexer->lookahead != ']' && !is_newline(lexer->lookahead)) {
-        lexer->advance(lexer, false);
-      }
-      lexer->result_symbol = SECTION_NAME;
-      return true;
-    }
-  }
 
   return false;
 }

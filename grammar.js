@@ -42,9 +42,10 @@ module.exports = grammar({
         ),
 
         value_list: $ => repeat1(choice(
-            seq($.int, optional($.whitespace)),
-            seq($.float, optional($.whitespace)),
-            seq($.quoted_string, optional($.whitespace)),
+            $.int,
+            $.float,
+            $.quoted_string,
+            $.whitespace,
             $.unquoted_string,
             $.comma,
             $.line_comment,
