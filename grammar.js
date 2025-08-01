@@ -16,13 +16,20 @@ module.exports = grammar({
     ],
 
     rules: {
-        program: $ => repeat($._line),
+        program: $ => seq(
+            repeat($._line),
+            optional($._line_content)
+        ),
 
         _line: $ => choice(
-            seq($.section, $.line_break),
-            seq($.item, $.line_break),
-            seq($.comment, $.line_break),
-            $.line_break,
+            seq($._line_content, $.line_break),
+            $.line_break
+        ),
+
+        _line_content: $ => choice(
+            $.section,
+            $.item,
+            $.comment,
         ),
 
         section: $ => seq(

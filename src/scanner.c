@@ -142,7 +142,6 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
         (lexer->lookahead == '-' || lexer->lookahead == '.' ||
          (lexer->lookahead >= '0' && lexer->lookahead <= '9'))) {
 
-      bool saw_digit = false;
       bool is_float = false;
 
       if (lexer->lookahead == '-') {
@@ -150,7 +149,6 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
       }
 
       while (lexer->lookahead >= '0' && lexer->lookahead <= '9') {
-        saw_digit = true;
         lexer->advance(lexer, false);
         lexer->mark_end(lexer);
       }
@@ -160,7 +158,6 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
         lexer->advance(lexer, false);
 
         while (lexer->lookahead >= '0' && lexer->lookahead <= '9') {
-          saw_digit = true;
           lexer->advance(lexer, false);
           lexer->mark_end(lexer);
         }
