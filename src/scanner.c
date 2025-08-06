@@ -215,20 +215,6 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
    }
  }
 
-
-  // LINE_COMMENT
-  if (valid_symbols[LINE_COMMENT] && lexer->lookahead == '/') {
-    lexer->advance(lexer, false);
-    if (lexer->lookahead == '/') {
-      lexer->advance(lexer, false);
-      while (lexer->lookahead && !is_newline(lexer->lookahead)) {
-        lexer->advance(lexer, false);
-      }
-      lexer->result_symbol = LINE_COMMENT;
-      return true;
-    }
-  }
-
   // QUOTED_STRING
   if (valid_symbols[QUOTED_STRING] &&
       (lexer->lookahead == '"' || lexer->lookahead == '\'')) {
