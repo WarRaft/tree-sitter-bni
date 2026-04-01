@@ -6,7 +6,8 @@ module.exports = grammar({
         $.l_bracket,
         $.int,
         $.float,
-        $.quoted_string,
+        $.dq_string_content,
+        $.sq_string_content,
         $.unquoted_string,
         $.whitespace,
         $.comma,
@@ -46,6 +47,11 @@ module.exports = grammar({
             seq($.key, '='),
             seq('=', $.value_list),
             '='
+        ),
+
+        quoted_string: $ => choice(
+            seq('"', optional(alias($.dq_string_content, $.string_content)), '"'),
+            seq("'", optional(alias($.sq_string_content, $.string_content)), "'"),
         ),
 
         value_list: $ => repeat1(choice(

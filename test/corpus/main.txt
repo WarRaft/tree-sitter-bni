@@ -1,5 +1,5 @@
 ==================
-Main
+Section
 ==================
 
 [Section]
@@ -7,10 +7,699 @@ Main
 ---
 
 (program
-    (line_break)
-    (section
-        (l_bracket)
-        (section_name)
-    )
-    (line_break)
-)
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (section
+    (whitespace)
+    (l_bracket)
+    (section_name)))
+
+==================
+Section without closing bracket
+==================
+
+[Section
+---
+
+(program
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name)))
+
+==================
+Comment
+==================
+
+// line comment
+//*****
+---
+
+(program
+  (line_break)
+  (comment
+    (line_comment))
+  (line_break)
+  (comment
+    (line_comment)))
+
+==================
+Empty lines
+==================
+
+[Section]
+
+Key=val
+
+---
+
+(program
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)))
+  (line_break))
+
+==================
+Item key=value
+==================
+
+Key=value
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Item key= (empty value)
+==================
+
+Key=
+---
+
+(program
+  (line_break)
+  (item
+    (key)))
+
+==================
+Item =value (no key)
+==================
+
+=value
+---
+
+(program
+  (line_break)
+  (item
+    (value_list
+      (unquoted_string))))
+
+==================
+Item = (bare equals)
+==================
+
+=
+---
+
+(program
+  (line_break)
+  (item))
+
+==================
+Integer values
+==================
+
+Key=42
+Key=-1
+Key=0
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int))))
+
+==================
+Float values
+==================
+
+Key=0.5
+Key=-3.14
+Key=0.00
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float))))
+
+==================
+Comma-separated values
+==================
+
+Color=255,220,0
+Velocity=0,0.03,100
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (float)
+      (comma)
+      (int))))
+
+==================
+Quoted string
+==================
+
+Key="City Building (Diagonal 1, Red)"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Empty quoted string
+==================
+
+Key=""
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string))))
+
+==================
+Mixed quoted and unquoted with commas
+==================
+
+Key=~Param," text with, comma ",~Other
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (unquoted_string))))
+
+==================
+Inline comment after value
+==================
+
+Duration=3000 // in milliseconds
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (whitespace)
+      (line_comment))))
+
+==================
+Inline comment after float
+==================
+
+Chance=0.7 // percent
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)
+      (whitespace)
+      (line_comment))))
+
+==================
+Unquoted string with path
+==================
+
+Key=ReplaceableTextures\WorldEditUI\Actions-AI
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Full structure
+==================
+
+[TriggerCategories]
+// comment
+TC_AI=WESTRING_TRIGCAT_AI,ReplaceableTextures\WorldEditUI\Actions-AI
+Key=
+---
+
+(program
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (comment
+    (line_comment))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (unquoted_string)))
+  (line_break)
+  (item
+    (key)))
+
+==================
+Quoted string with comma preserves value
+==================
+
+Name="City Building (Diagonal 1, Red)"
+Name="City Building (Diagonal 1, Green)"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content))))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Quoted and unquoted mixed in comma list
+==================
+
+Key=text,"quoted, val",more
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (unquoted_string))))
+
+==================
+Multiple sections
+==================
+
+[Section1]
+Key1=val1
+
+[Section2]
+Key2=val2
+---
+
+(program
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)))
+  (line_break)
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Quoted separator value
+==================
+
+SEPARATOR="--"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Mixed types in comma list
+==================
+
+abilcode=0,1,1,WESTRING_TRIGTYPE_abilcode,integer
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (unquoted_string)
+      (comma)
+      (unquoted_string))))
+
+==================
+String with int and path in comma list
+==================
+
+TC_AI=WESTRING_TRIGCAT_AI,ReplaceableTextures\WorldEditUI\Actions-AI,1
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (unquoted_string)
+      (comma)
+      (int))))
+
+==================
+Tilde parameters with quoted text
+==================
+
+FuncKey=~Destructible," dies"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content)))))
+
+==================
+Multiple tilde params and quoted text
+==================
+
+FuncKey=~Player," ",~Presses/Releases," the ",~Key," key"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content)))))
+
+==================
+Duplicate keys
+==================
+
+Event="Destructible Dies"
+Event=~Destructible," dies"
+EventHint=
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content))))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (quoted_string
+        (string_content))))
+  (line_break)
+  (item
+    (key)))
+
+==================
+Inline comment with multiple spaces
+==================
+
+SpeedVerySlow=175   // lower bound
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (whitespace)
+      (line_comment))))
+
+==================
+Long comma-separated int list
+==================
+
+AOA=304,311,318,325,332,339
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int))))
+
+==================
+RGBA color value
+==================
+
+GoldTextColor=255,255,220,0
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int)
+      (comma)
+      (int))))
+
+==================
+Comment separator line
+==================
+
+//***************************************************************************
+---
+
+(program
+  (line_break)
+  (comment
+    (line_comment)))
+
+==================
+Section with items and comments
+==================
+
+[Blight]
+Texture=TerrainArt\Blight\Blight
+PuffDuration=3000 // Duration of a puff
+PuffChance=0.7 // percent
+---
+
+(program
+  (line_break)
+  (section
+    (l_bracket)
+    (section_name))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (whitespace)
+      (line_comment)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)
+      (whitespace)
+      (line_comment))))
+
+==================
+Velocity vector value
+==================
+
+GoldTextVelocity=0,0.03,100
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (float)
+      (comma)
+      (int))))
+
+==================
+Quoted string with apostrophe in value
+==================
+
+Key="Use 'Event Response' to refer to it."
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Smoothing float values
+==================
+
+Smoothing=0.00
+SmoothScale=0.80
+SmoothBias=0.15
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float)))
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float))))
+
+==================
+Single letter key
+==================
+
+A=WESTRING_LOCALE_ASHENVALE,TerrainArt\Blight\Ashen_Blight
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (unquoted_string))))

@@ -66,6 +66,21 @@
     }
   },
   {
+    "type": "quoted_string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "string_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "section",
     "named": true,
     "fields": {},
@@ -128,6 +143,14 @@
     }
   },
   {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
     "type": "=",
     "named": false
   },
@@ -164,11 +187,11 @@
     "named": true
   },
   {
-    "type": "quoted_string",
+    "type": "section_name",
     "named": true
   },
   {
-    "type": "section_name",
+    "type": "string_content",
     "named": true
   },
   {
