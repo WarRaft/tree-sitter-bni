@@ -648,10 +648,10 @@ GoldTextVelocity=0,0.03,100
       (int))))
 
 ==================
-Quoted string with apostrophe in value
+Single quotes are literal characters
 ==================
 
-Key="Use 'Event Response' to refer to it."
+Key=Kel'Thuzad (Necromancer)
 ---
 
 (program
@@ -659,8 +659,21 @@ Key="Use 'Event Response' to refer to it."
   (item
     (key)
     (value_list
-      (quoted_string
-        (string_content)))))
+      (unquoted_string))))
+
+==================
+Single quotes in hotkey value
+==================
+
+QuickSave='S'
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
 
 ==================
 Smoothing float values
@@ -703,3 +716,283 @@ A=WESTRING_LOCALE_ASHENVALE,TerrainArt\Blight\Ashen_Blight
       (unquoted_string)
       (comma)
       (unquoted_string))))
+
+==================
+Backslash in quoted string (no escaping)
+==================
+
+WESTRING_HOTKEY_BACKSLASH="\"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Single quotes inside double-quoted string
+==================
+
+Key="Use 'Event Response' to refer to it."
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content)))))
+
+==================
+Apostrophe in unquoted value
+==================
+
+Key=Kel'Thuzad (Lich)
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Single quote in unquoted comma list
+==================
+
+Key=Dreadlord's Fall,Maps\FrozenThrone\Campaign\UndeadX05.w3x
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (unquoted_string))))
+
+==================
+Multiple single quotes in unquoted value
+==================
+
+Key='Hide minimap' option has been turned on
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Hotkey single-char with inline comment
+==================
+
+QuickSave='S'           // Alt-S
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (whitespace)
+      (line_comment))))
+
+==================
+Campaign strings with quoted commas
+==================
+
+Key="Cinematic","Arthas' Betrayal","HumanEd"
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (quoted_string
+        (string_content))
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (quoted_string
+        (string_content)))))
+
+==================
+Quoted string with percent placeholder
+==================
+
+Key=Must have one '%s' object selected
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Empty value with inline comment
+==================
+
+Key= // nothing here
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (whitespace)
+      (line_comment))))
+
+==================
+Negative integer
+==================
+
+Key=-42
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int))))
+
+==================
+Negative float
+==================
+
+Key=-0.75
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (float))))
+
+==================
+Comma-separated mixed types with quoted string
+==================
+
+Key=1,"text, here",0.5,name
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (int)
+      (comma)
+      (quoted_string
+        (string_content))
+      (comma)
+      (float)
+      (comma)
+      (unquoted_string))))
+
+==================
+Multiple commas with empty segments
+==================
+
+Key=a,,b
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (comma)
+      (unquoted_string))))
+
+==================
+Trailing comma
+==================
+
+Key=a,b,
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string)
+      (comma)
+      (unquoted_string)
+      (comma))))
+
+==================
+Leading comma
+==================
+
+Key=,a
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (comma)
+      (unquoted_string))))
+
+==================
+Path with backslashes
+==================
+
+Key=TerrainArt\LordaeronSummer\Lords_Grss
+---
+
+(program
+  (line_break)
+  (item
+    (key)
+    (value_list
+      (unquoted_string))))
+
+==================
+Indented comment
+==================
+
+ // indented comment
+---
+
+(program
+  (line_break)
+  (comment
+    (whitespace)
+    (line_comment)))
+
+==================
+Section indented with tab
+==================
+
+	[TabSection]
+---
+
+(program
+  (line_break)
+  (section
+    (whitespace)
+    (l_bracket)
+    (section_name)))
+

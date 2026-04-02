@@ -176,67 +176,27 @@
       ]
     },
     "quoted_string": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "SEQ",
+          "type": "STRING",
+          "value": "\""
+        },
+        {
+          "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "\""
+              "type": "SYMBOL",
+              "name": "string_content"
             },
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "dq_string_content"
-                  },
-                  "named": true,
-                  "value": "string_content"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "STRING",
-              "value": "\""
+              "type": "BLANK"
             }
           ]
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "'"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "sq_string_content"
-                  },
-                  "named": true,
-                  "value": "string_content"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "STRING",
-              "value": "'"
-            }
-          ]
+          "type": "STRING",
+          "value": "\""
         }
       ]
     },
@@ -304,11 +264,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "dq_string_content"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "sq_string_content"
+      "name": "string_content"
     },
     {
       "type": "SYMBOL",

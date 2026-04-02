@@ -6,7 +6,7 @@ A [Tree-sitter](https://tree-sitter.github.io/) grammar for the **BNI** (Blizzar
 configuration format used in classic Blizzard games such as *Warcraft III*.
 
 These files are found throughout the game's data, including `TriggerData.txt`, `TriggerStrings.txt`,
-`WorldEditStrings.txt`, `MiscData.txt`, `WorldEditData.txt`, and many more.
+`WorldEditStrings.txt`, `MiscData.txt`, `WorldEditData.txt`, `MiscUI.txt`, and many more.
 
 ## Format Overview
 
@@ -66,15 +66,15 @@ SpeedVerySlow=175   // lower bound
 
 Values are parsed into typed tokens:
 
-| Type              | Examples                              | Description                                |
-|-------------------|---------------------------------------|--------------------------------------------|
-| `int`             | `42`, `-1`, `0`                       | Integer (optional leading `-`)             |
-| `float`           | `0.5`, `-3.14`, `0.00`               | Decimal number (optional leading `-`)      |
-| `unquoted_string` | `Warcraft III`, `TerrainArt\Blight`   | Plain text (no commas or quotes)           |
-| `quoted_string`   | `"City Building (Diagonal 1, Red)"`   | Text enclosed in `"` or `'`               |
-| `comma`           | `,`                                   | Value separator                            |
-| `whitespace`      | ` ` / `\t`                            | Significant whitespace (before a comment)  |
-| `line_comment`    | `// text`                             | Inline comment at end of value             |
+| Type              | Examples                              | Description                                      |
+|-------------------|---------------------------------------|--------------------------------------------------|
+| `int`             | `42`, `-1`, `0`                       | Integer (optional leading `-`)                   |
+| `float`           | `0.5`, `-3.14`, `0.00`               | Decimal number (optional leading `-`)            |
+| `unquoted_string` | `Warcraft III`, `Kel'Thuzad (Lich)`   | Plain text (no commas or double quotes)          |
+| `quoted_string`   | `"City Building (Diagonal 1, Red)"`   | Text enclosed in double quotes (`"`)             |
+| `comma`           | `,`                                   | Value separator                                  |
+| `whitespace`      | ` ` / `\t`                            | Significant whitespace (before a comment)        |
+| `line_comment`    | `// text`                             | Inline comment at end of value                   |
 
 ### Whitespace Is Significant
 
@@ -89,7 +89,14 @@ PuffDuration=3000 // Duration
 ```
 
 Whitespace inside unquoted string values is part of the `unquoted_string` token — it is not
-separated out.
+separated out. Trailing whitespace before a comment is stripped from the `unquoted_string` and
+emitted as a separate `whitespace` token:
+
+```
+QuickSave='S'           // Alt-S
+          ^^^           ^^^^^^^^^
+    unquoted_string    whitespace + line_comment
+```
 
 ### Comma Mechanics
 
@@ -103,7 +110,7 @@ GoldTextVelocity=0,0.03,100         → int, comma, float, comma, int
 abilcode=0,1,1,WESTRING,integer     → int, comma, int, comma, int, comma, unquoted_string, comma, unquoted_string
 ```
 
-### Quoted Strings
+### Quoted Strings (Double Quotes Only)
 
 When a value contains a comma that should **not** be treated as a separator, it must be
 wrapped in double quotes. The quotes are parsed as **separate tokens** from the content:
@@ -119,9 +126,37 @@ Tree:
   (string_content))        ← only the text between the quotes
 ```
 
-The `"` characters are anonymous nodes in the syntax tree. Single quotes (`'`) are also supported.
+The `"` characters are anonymous nodes in the syntax tree.
 
 Empty quoted strings (`""`) are valid — the `string_content` node is simply absent.
+
+#### No Escape Sequences
+
+There are **no escape sequences** inside quoted strings. A backslash (`\`) is always a literal
+character:
+
+```ini
+WESTRING_HOTKEY_BACKSLASH="\"
+```
+
+This is a quoted string containing a single backslash character. The first `"` opens the string,
+`\` is the content, and the second `"` closes it.
+
+#### Single Quotes Are Literal Characters
+
+Single quotes (`'`) have **no special meaning** in BNI. They do not open or close strings —
+they are just regular characters inside unquoted values:
+
+```ini
+WESTRING_SOUND_KELTHUZADNECRO=Kel'Thuzad (Necromancer)
+WESTRING_NOTMELEE_HIDDENMINIMAP='Hide minimap' option has been turned on
+QuickSave='S'           // Alt-S
+```
+
+All three values above are parsed as plain `unquoted_string` tokens. The `'` is part of the text,
+not a delimiter.
+
+#### Quoting for Commas and Parameters
 
 This quoting mechanism is commonly used in `TriggerStrings.txt` where display text is mixed
 with parameter references (prefixed with `~`):
@@ -149,6 +184,14 @@ Parsed as:
   (quoted_string
     (string_content)))    ← " key"
 ```
+
+And in `CampaignStrings.txt`, multiple comma-separated quoted values:
+
+```ini
+EndCinematic="Cinematic","Arthas' Betrayal","HumanEd"
+```
+
+Note that the `'` inside `Arthas' Betrayal` is just a literal character within the quoted content.
 
 ## Syntax Tree Structure
 

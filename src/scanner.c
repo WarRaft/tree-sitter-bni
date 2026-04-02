@@ -8,8 +8,7 @@ enum TokenType {
   L_BRACKET,
   INT,
   FLOAT,
-  DQ_STRING_CONTENT,
-  SQ_STRING_CONTENT,
+  STRING_CONTENT,
   UNQUOTED_STRING,
   WHITESPACE,
   COMMA,
@@ -216,39 +215,15 @@ bool tree_sitter_bni_external_scanner_scan(void *payload, TSLexer *lexer, const 
    }
  }
 
-  // DQ_STRING_CONTENT (content between double quotes, opening " already consumed by grammar)
-  if (valid_symbols[DQ_STRING_CONTENT] && lexer->lookahead != '"') {
+  // STRING_CONTENT (content between double quotes, opening " already consumed by grammar)
+  if (valid_symbols[STRING_CONTENT] && lexer->lookahead != '"') {
     bool found = false;
     while (lexer->lookahead != 0 && !is_newline(lexer->lookahead) && lexer->lookahead != '"') {
-      if (lexer->lookahead == '\\') {
-        lexer->advance(lexer, false);
-        if (lexer->lookahead != 0 && !is_newline(lexer->lookahead)) lexer->advance(lexer, false);
-      } else {
-        lexer->advance(lexer, false);
-      }
+      lexer->advance(lexer, false);
       found = true;
     }
     if (found) {
-      lexer->result_symbol = DQ_STRING_CONTENT;
-      lexer->mark_end(lexer);
-      return true;
-    }
-  }
-
-  // SQ_STRING_CONTENT (content between single quotes, opening ' already consumed by grammar)
-  if (valid_symbols[SQ_STRING_CONTENT] && lexer->lookahead != '\'') {
-    bool found = false;
-    while (lexer->lookahead != 0 && !is_newline(lexer->lookahead) && lexer->lookahead != '\'') {
-      if (lexer->lookahead == '\\') {
-        lexer->advance(lexer, false);
-        if (lexer->lookahead != 0 && !is_newline(lexer->lookahead)) lexer->advance(lexer, false);
-      } else {
-        lexer->advance(lexer, false);
-      }
-      found = true;
-    }
-    if (found) {
-      lexer->result_symbol = SQ_STRING_CONTENT;
+      lexer->result_symbol = STRING_CONTENT;
       lexer->mark_end(lexer);
       return true;
     }
@@ -261,7 +236,7 @@ if (valid_symbols[UNQUOTED_STRING]) {
   for (;;) {
     int32_t c = lexer->lookahead;
 
-    if (c == 0 || c == ',' || c == '"' || c == '\'' || is_newline(c)) break;
+    if (c == 0 || c == ',' || c == '"' || is_newline(c)) break;
 
     if (c == '/') {
       lexer->advance(lexer, false);
@@ -278,7 +253,9 @@ if (valid_symbols[UNQUOTED_STRING]) {
 
     lexer->advance(lexer, false);
     found = true;
-    lexer->mark_end(lexer);
+    if (c != ' ' && c != '\t') {
+      lexer->mark_end(lexer);
+    }
   }
 
   if (found) {
